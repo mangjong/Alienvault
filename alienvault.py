@@ -52,7 +52,6 @@ def get_pulses_detail(pulse_count, pulse_info):
                 tmp_ids = []
                 for ids in pulses['attack_ids']:
                     ids_name = ids['display_name']
-                    #print(f'Related IDS : {ids_name}')
                     tmp_ids.append(ids_name)
                     result_ids = ', '.join(tmp_ids)
                 
