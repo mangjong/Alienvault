@@ -12,7 +12,6 @@ headers = {
     "Connection": "close"
     }
 
-
 def get_info(ip):
     url = f"http://otx.alienvault.com/api/v1/indicators/IPv4/{ip}"
     response = requests.post(url, headers=headers, verify=False)
