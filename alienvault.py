@@ -31,7 +31,8 @@ def get_info(ip):
             print(f'Country Code :    Not verified')
 
         pulse_count = pulse_info['count']
-        print(f'Pulse Count :     {pulse_count}')
+        if pulse_count != 0:
+            print(f'Pulse Count :     {pulse_count}')
 
         adversary = pulse_info['related']['other']['adversary']
         if len(adversary) != 0:
@@ -65,7 +66,7 @@ def get_pulses_detail(pulse_count, pulse_info):
         
         if len(set(total_tags)) != 0:
             print(f'* Tags Count :    {len(set(total_tags))}')
-            print(f'* Related Tags :  {result_tags}')
+            print(f'* Related Tags :  {result_tags}\n')
 
 def main():
     start_time = time.time()
@@ -73,8 +74,16 @@ def main():
     print("\n Checking...\n")
 
     if len(sys.argv) == 2:
-        ip = sys.argv[1]
-        get_info(ip)
+        input_data = sys.argv[1]
+        if not input_data.endswith('.txt'):
+            get_info(input_data)
+        else:
+            with open(input_data, 'r') as f:
+                lines = f.readlines()
+            for line in lines:
+                ip = line.strip()
+                if ip:
+                    get_info(ip)
     else:
         print("값을 입력하세요. \n")
 
