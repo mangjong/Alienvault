@@ -31,8 +31,7 @@ def get_info(ip):
             print(f'Country Code :    Not verified')
 
         pulse_count = pulse_info['count']
-        if pulse_count != 0:
-            print(f'Pulse Count :     {pulse_count}')
+        print(f'Pulse Count :     {pulse_count}')
 
         adversary = pulse_info['related']['other']['adversary']
         if len(adversary) != 0:
