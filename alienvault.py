@@ -38,33 +38,33 @@ def get_info(ip):
         malware_families = pulse_info['related']['other']['malware_families']
         if len(malware_families) != 0:
             print(f"Malwares :        {', '.join(malware_families)}")
-        get_pulses_detail(pulse_count, pulse_info)
+        if pulse_count != 0:
+            get_pulses_detail(pulse_info)
     except:
         print(f"An unexpected Error Occurred !\n")
 
-def get_pulses_detail(pulse_count, pulse_info):
-    if pulse_count != 0:
-        total_tags = []
+def get_pulses_detail(pulse_info):
+    total_tags = []
 
-        for pulses in pulse_info['pulses']:
-            if len(pulses['attack_ids']) != 0:                
-                tmp_ids = []
-                for ids in pulses['attack_ids']:
-                    ids_name = ids['display_name']
-                    tmp_ids.append(ids_name)
-                    result_ids = ', '.join(tmp_ids)
-                
-            if len(pulses['tags']) != 0:
-                tmp_tags = ', '.join(pulses['tags'])
-                total_tags.extend(tmp_tags.split(', '))
-                result_tags = ', '.join(sorted(set(total_tags)))
-        
-        if len(pulses['attack_ids']) != 0:
-            print(f'* Related IDS :   {result_ids}')
-        
-        if len(set(total_tags)) != 0:
-            print(f'* Tags Count :    {len(set(total_tags))}')
-            print(f'* Related Tags :  {result_tags}\n')
+    for pulses in pulse_info['pulses']:
+        if len(pulses['attack_ids']) != 0:                
+            tmp_ids = []
+            for ids in pulses['attack_ids']:
+                ids_name = ids['display_name']
+                tmp_ids.append(ids_name)
+                result_ids = ', '.join(tmp_ids)
+
+        if len(pulses['tags']) != 0:
+            tmp_tags = ', '.join(pulses['tags'])
+            total_tags.extend(tmp_tags.split(', '))
+            result_tags = ', '.join(sorted(set(total_tags)))
+
+    if len(pulses['attack_ids']) != 0:
+        print(f'* Related IDS :   {result_ids}')
+
+    if len(set(total_tags)) != 0:
+        print(f'* Tags Count :    {len(set(total_tags))}')
+        print(f'* Related Tags :  {result_tags}\n')
 
 def main():
     start_time = time.time()
