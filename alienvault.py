@@ -83,7 +83,7 @@ def main():
                 if ip:
                     get_info(ip)
     else:
-        print("값을 입력하세요. \n")
+        print("Enter the IP to view. \n")
 
     print(f'Total Time:       {round((time.time() - start_time), 2)} seconds')
 
