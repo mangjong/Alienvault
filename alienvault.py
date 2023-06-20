@@ -3,6 +3,7 @@ import json
 import urllib3
 import time
 import sys
+import csv
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -12,7 +13,7 @@ headers = {
     "Connection": "close"
     }
 
-def get_info(ip):
+def get_info(ip, rows):
     url = f"http://otx.alienvault.com/api/v1/indicators/IPv4/{ip}"
     response = requests.post(url, headers=headers, verify=False)
     decoded_response = response.json()
@@ -35,53 +36,67 @@ def get_info(ip):
         adversary = pulse_info['related']['other']['adversary']
         if len(adversary) != 0:
             print(f"Adversary :       {','.join(adversary)}")
+        else:
+            adversary = ""
         malware_families = pulse_info['related']['other']['malware_families']
         if len(malware_families) != 0:
             print(f"Malwares :        {', '.join(malware_families)}")
+        else:
+            malware_families = ""
+
         if pulse_count != 0:
-            get_pulses_detail(pulse_info)
+            total_tags = []
+            for pulses in pulse_info['pulses']:
+                if len(pulses['attack_ids']) != 0:                
+                    tmp_ids = []
+                    for ids in pulses['attack_ids']:
+                        ids_name = ids['display_name']
+                        tmp_ids.append(ids_name)
+                        result_ids = ', '.join(tmp_ids)
+                    
+                if len(pulses['tags']) != 0:
+                    tmp_tags = ', '.join(pulses['tags'])
+                    total_tags.extend(tmp_tags.split(', '))
+                    result_tags = ', '.join(sorted(set(total_tags)))
+            
+            if len(pulses['attack_ids']) != 0:
+                print(f'* Related IDS :   {result_ids}')
+            
+            if len(set(total_tags)) != 0:
+                print(f'* Tags Count :    {len(set(total_tags))}')
+                print(f'* Related Tags :  {result_tags}\n')
+            
+        row = [indicator, country_code, pulse_count, adversary, malware_families, result_ids, len(set(total_tags)), result_tags]
+        rows.append(row)
     except:
         print(f"An unexpected Error Occurred !\n")
 
-def get_pulses_detail(pulse_info):
-    total_tags = []
-
-    for pulses in pulse_info['pulses']:
-        if len(pulses['attack_ids']) != 0:                
-            tmp_ids = []
-            for ids in pulses['attack_ids']:
-                ids_name = ids['display_name']
-                tmp_ids.append(ids_name)
-                result_ids = ', '.join(tmp_ids)
-
-        if len(pulses['tags']) != 0:
-            tmp_tags = ', '.join(pulses['tags'])
-            total_tags.extend(tmp_tags.split(', '))
-            result_tags = ', '.join(sorted(set(total_tags)))
-
-    if len(pulses['attack_ids']) != 0:
-        print(f'* Related IDS :   {result_ids}')
-
-    if len(set(total_tags)) != 0:
-        print(f'* Tags Count :    {len(set(total_tags))}')
-        print(f'* Related Tags :  {result_tags}\n')
-
+def write_csv(filename, rows):
+    with open(filename, 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(['IP Address', 'Country Code', 'Pulse Count', 'Adversary', 'Malware', 'Related IDS', 'Tag Count', 'Result Tags'])
+        writer.writerows(rows)
+        
 def main():
     start_time = time.time()
+
+    CSV_FILENAME = 'alienvault_result.csv'
+    rows = []
 
     print("\n Checking...\n")
 
     if len(sys.argv) == 2:
         input_data = sys.argv[1]
         if not input_data.endswith('.txt'):
-            get_info(input_data)
+            get_info(input_data, rows)
         else:
             with open(input_data, 'r') as f:
                 lines = f.readlines()
             for line in lines:
                 ip = line.strip()
                 if ip:
-                    get_info(ip)
+                    get_info(ip, rows)
+            write_csv(CSV_FILENAME, rows)
     else:
         print("Enter the IP to view. \n")
 
