@@ -43,7 +43,11 @@ def get_info(ip, rows):
             print(f"Malwares :        {', '.join(malware_families)}")
         else:
             malware_families = ""
-
+            
+        result_ids =""
+        total_tags = ""
+        result_tags = ""
+        
         if pulse_count != 0:
             total_tags = []
             for pulses in pulse_info['pulses']:
