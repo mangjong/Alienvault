@@ -28,6 +28,7 @@ def get_info(ip, rows):
             country_code = decoded_response['country_code']
             print(f'Country Code :    {country_code}')
         else:
+            country_code = "N/A"
             print(f'Country Code :    Not verified')
 
         pulse_count = pulse_info['count']
